@@ -1,6 +1,5 @@
 package io.github.tt432.mceffekseer.efkefc;
 
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -12,34 +11,20 @@ public class EfkefcRenderer {
     private static int currentPlay;
 
     public static void render(EfkefcObject object, Vector3f pos,
-                              Matrix4f projection, Camera camera, Matrix4f modelView,
+                              Matrix4f projection, Matrix4f cameraMatrix, Matrix4f modelView,
                               boolean firstTick) {
         var core = EfkefcManager.getEffekseerManagerCore();
 
         if (firstTick) {
             currentPlay = core.Play(object.getEffectCore());
             core.SetEffectScale(currentPlay, 10, 10, 10);
-            core.SetEffectPosition(currentPlay, pos.x, pos.y, pos.z);
+            core.SetEffectPosition(currentPlay, pos.x(), pos.y(), pos.z());
         }
 
         Minecraft mc = Minecraft.getInstance();
 
-        //projection = new Matrix4f(projection).translate(new Vector3f(pos).sub(camera.getPosition().toVector3f()));
-
         Matrix4f mul = new Matrix4f(projection).mul(modelView);
         setMatrix(core::SetProjectionMatrix, mul);
-
-        // Matrix4f cameraMatrix = new Matrix4f().lookAt(
-        //         camera.getPosition().toVector3f(),
-        //         camera.getLookVector(),
-        //         camera.getUpVector()
-        // );
-
-        Matrix4f cameraMatrix = new Matrix4f()
-                .rotate((float) Math.toRadians(camera.getXRot()), new Vector3f(1, 0, 0))
-                .rotate((float) Math.toRadians(camera.getYRot()), new Vector3f(0, 1, 0))
-                .translate(camera.getPosition().toVector3f().mul(1, -1, 1))
-                ;
 
         setMatrix(core::SetCameraMatrix, cameraMatrix);
 

@@ -47,14 +47,22 @@ public class EfkefcObject {
         log.info("Success load efkefc : " + location);
     }
 
+    private Optional<Resource> getResource(ResourceManager rm, ResourceLocation rl) {
+        try {
+            return Optional.of(rm.getResource(rl));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
     private void loadTexture(ResourceManager manager, String namespace) throws IOException {
         for (EffekseerTextureType textureType : textureTypes) {
             for (int i = 0; i < effectCore.GetTextureCount(textureType); i++) {
                 String path = effectCore.GetTexturePath(i, textureType);
-                Optional<Resource> resource = manager.getResource(toLoc(namespace, "textures", path));
+                Optional<Resource> resource = getResource(manager, toLoc(namespace, "textures", path));
 
                 if (resource.isPresent()) {
-                    try (var isi = resource.get().open()) {
+                    try (var isi = resource.get().getInputStream()) {
                         byte[] bytes = IOUtils.toByteArray(isi);
                         effectCore.LoadTexture(bytes, bytes.length, i, textureType);
                     }
@@ -66,10 +74,10 @@ public class EfkefcObject {
     private void loadModel(ResourceManager manager, String namespace) throws IOException {
         for (int i = 0; i < effectCore.GetModelCount(); i++) {
             String path = effectCore.GetModelPath(i);
-            Optional<Resource> resource = manager.getResource(toLoc(namespace, "models", path));
+            Optional<Resource> resource = getResource(manager, toLoc(namespace, "models", path));
 
             if (resource.isPresent()) {
-                try (var isi = resource.get().open()) {
+                try (var isi = resource.get().getInputStream()) {
                     byte[] bytes = IOUtils.toByteArray(isi);
                     effectCore.LoadModel(bytes, bytes.length, i);
                 }
@@ -80,10 +88,10 @@ public class EfkefcObject {
     private void loadMaterial(ResourceManager manager, String namespace) throws IOException {
         for (int i = 0; i < effectCore.GetMaterialCount(); i++) {
             String path = effectCore.GetMaterialPath(i);
-            Optional<Resource> resource = manager.getResource(toLoc(namespace, "materials", path));
+            Optional<Resource> resource = getResource(manager, toLoc(namespace, "materials", path));
 
             if (resource.isPresent()) {
-                try (var isi = resource.get().open()) {
+                try (var isi = resource.get().getInputStream()) {
                     byte[] bytes = IOUtils.toByteArray(isi);
                     effectCore.LoadMaterial(bytes, bytes.length, i);
                 }
@@ -94,10 +102,10 @@ public class EfkefcObject {
     private void loadCurve(ResourceManager manager, String namespace) throws IOException {
         for (int i = 0; i < effectCore.GetCurveCount(); i++) {
             String path = effectCore.GetCurvePath(i);
-            Optional<Resource> resource = manager.getResource(toLoc(namespace, "curves", path));
+            Optional<Resource> resource = getResource(manager, toLoc(namespace, "curves", path));
 
             if (resource.isPresent()) {
-                try (var isi = resource.get().open()) {
+                try (var isi = resource.get().getInputStream()) {
                     byte[] bytes = IOUtils.toByteArray(isi);
                     effectCore.LoadCurve(bytes, bytes.length, i);
                 }

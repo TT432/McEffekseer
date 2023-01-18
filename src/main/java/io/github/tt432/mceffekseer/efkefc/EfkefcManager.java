@@ -2,9 +2,9 @@ package io.github.tt432.mceffekseer.efkefc;
 
 import Effekseer.swig.EffekseerBackendCore;
 import Effekseer.swig.EffekseerManagerCore;
+import io.github.tt432.mceffekseer.util.FileToIdConverter;
 import io.github.tt432.mceffekseer.util.SharedLibraryLoader;
 import lombok.Getter;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -34,11 +34,10 @@ public class EfkefcManager {
         efkefcMap.clear();
         FileToIdConverter filetoidconverter = new FileToIdConverter(DIRECTORY, ".efkefc");
 
-        for (var entry : filetoidconverter.listMatchingResources(pResourceManager).entrySet()) {
-            ResourceLocation file = entry.getKey();
+        for (var file : filetoidconverter.listMatchingResources(pResourceManager)) {
             ResourceLocation id = filetoidconverter.fileToId(file);
 
-            try (var is = entry.getValue().open()) {
+            try (var is = pResourceManager.getResource(file).getInputStream()) {
                 efkefcMap.put(id, new EfkefcObject(id, pResourceManager, is));
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -28,7 +28,7 @@ java {
 minecraft {
     mappings channel: 'parchment', version: project.parchment_version + "-" + project.mc_version
 
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -126,6 +126,10 @@ repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+
     flatDir {
         dir 'libs'
     }
@@ -143,12 +147,12 @@ minecraft.runs.all {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.1.5'
+    minecraft "net.minecraftforge:forge:${project.mc_version}-${project.forge_version}"
 
-    // shade(":Effekseer:1.0")
-    // jarJar(group: '', name: 'Effekseer', version: '[1.0,)') {
-    //     jarJar.pin(it, '1.0')
-    // }
+    shade "org.joml:joml:1.10.5"
+    jarJar(group: 'org.joml', name: 'joml', version: '[1.10.5, )') {
+        jarJar.pin(it, '1.10.5')
+    }
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
