@@ -3,6 +3,7 @@ package io.github.tt432.mceffekseer.efkefc;
 import Effekseer.swig.EffekseerEffectCore;
 import Effekseer.swig.EffekseerTextureType;
 import com.google.common.base.CaseFormat;
+import io.github.tt432.mceffekseer.Mceffekseer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +28,10 @@ public class EfkefcObject {
 
     @Getter
     private final EffekseerEffectCore effectCore;
+    @Getter
+    private final int termMin;
+    @Getter
+    private final int termMax;
 
     public EfkefcObject(ResourceLocation location, ResourceManager manager, InputStream is) throws IOException {
         effectCore = new EffekseerEffectCore();
@@ -34,8 +39,13 @@ public class EfkefcObject {
 
         if (!effectCore.Load(bytes, bytes.length, 1)) {
             log.error("Failed to load efkefc : " + location);
+            termMin = -1;
+            termMax = -1;
             return;
         }
+
+        termMax = effectCore.GetTermMax();
+        termMin = effectCore.GetTermMin();
 
         String namespace = location.getNamespace();
 
@@ -51,6 +61,7 @@ public class EfkefcObject {
         try {
             return Optional.of(rm.getResource(rl));
         } catch (IOException e) {
+            log.error("[{}] Not found resource: " + rl, Mceffekseer.MOD_ID);
             return Optional.empty();
         }
     }
@@ -114,14 +125,35 @@ public class EfkefcObject {
     }
 
     public static ResourceLocation toLoc(String namespace, String type, String sourcePath) {
+        String substring = type.substring(0, type.length() - 1);
+        String lowerCase = sourcePath.toLowerCase();
+
+        if (!lowerCase.startsWith(type) && !lowerCase.startsWith(substring)) {
+            int index = lowerCase.indexOf("/" + substring);
+
+            if (index == -1)
+                index = lowerCase.indexOf("/" + type);
+
+            if (index == -1) {
+                log.error("load error; not have /{} in path : " + sourcePath, type);
+            } else {
+                sourcePath = sourcePath.substring(index + 1);
+            }
+        }
+
         StringBuilder dir = new StringBuilder("efkefc/").append(type);
         String[] split = sourcePath.split("/");
 
         for (int i = typeEqual(split[0], type) ? 1 : 0; i < split.length; i++) {
-            dir.append("/").append(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, split[i]));
+            dir.append("/").append(lowerUnderscore(split[i]));
         }
 
         return new ResourceLocation(namespace, dir.toString());
+    }
+
+    private static String lowerUnderscore(String s) {
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, s)
+                .replace("__", "_");
     }
 
     private static boolean typeEqual(String start, String type) {

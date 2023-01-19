@@ -18,7 +18,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = project.group_name
-version = '1.0.0'
+version = project.mod_version
 
 java {
     archivesBaseName = project.mod_id

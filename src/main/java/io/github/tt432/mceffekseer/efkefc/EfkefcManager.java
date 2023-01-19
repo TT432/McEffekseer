@@ -28,17 +28,21 @@ public class EfkefcManager {
         EffekseerBackendCore.InitializeWithOpenGL();
 
         effekseerManagerCore = new EffekseerManagerCore();
-        effekseerManagerCore.Initialize(8000);
+        effekseerManagerCore.Initialize(80000);
 
 
         efkefcMap.clear();
-        FileToIdConverter filetoidconverter = new FileToIdConverter(DIRECTORY, ".efkefc");
 
-        for (var file : filetoidconverter.listMatchingResources(pResourceManager)) {
-            ResourceLocation id = filetoidconverter.fileToId(file);
+        scan(new FileToIdConverter(DIRECTORY, ".efkefc"), pResourceManager);
+        scan(new FileToIdConverter(DIRECTORY, ".efkproj"), pResourceManager);
+    }
 
-            try (var is = pResourceManager.getResource(file).getInputStream()) {
-                efkefcMap.put(id, new EfkefcObject(id, pResourceManager, is));
+   static void scan(FileToIdConverter fileToIdConverter, ResourceManager resourceManager) {
+        for (var file : fileToIdConverter.listMatchingResources(resourceManager)) {
+            ResourceLocation id = fileToIdConverter.fileToId(file);
+
+            try (var is = resourceManager.getResource(file).getInputStream()) {
+                efkefcMap.put(id, new EfkefcObject(id, resourceManager, is));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

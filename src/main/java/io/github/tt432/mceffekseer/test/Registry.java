@@ -27,9 +27,9 @@ public class Registry {
             DeferredRegister.create(ForgeRegistries.ENTITIES, Mceffekseer.MOD_ID);
 
     public static final RegistryObject<TestItem> TEST_ITEM = ITEMS.register("test",
-            () -> new TestItem(new Item.Properties()));
+            () -> new TestItem(new Item.Properties().tab(CreativeTab.MAIN)));
 
-    public static final RegistryObject<EntityType<TestEntity>> TEST = register(TestEntity.class, TestEntity::new);
+    public static final RegistryObject<EntityType<TestEntity>> TEST_ENTITY = register(TestEntity.class, TestEntity::new);
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(
             Class<T> subClass,
@@ -38,11 +38,12 @@ public class Registry {
         String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, subClass.getSimpleName());
         return ENTITIES.register(name, () -> EntityType.Builder
                 .of(factory, MobCategory.CREATURE)
-                .sized(1, 2)
+                .sized(1, 1)
                 .build(name));
     }
 
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);
+        ITEMS.register(bus);
     }
 }

@@ -8,27 +8,25 @@ import org.joml.Vector3f;
  * @author DustW
  */
 public class EfkefcRenderer {
-    private static int currentPlay;
-
-    public static void render(EfkefcObject object, Vector3f pos,
-                              Matrix4f projection, Matrix4f cameraMatrix, Matrix4f modelView,
-                              boolean firstTick) {
+    public static void addToCore(EfkefcObject object, Vector3f pos, Vector3f size) {
         var core = EfkefcManager.getEffekseerManagerCore();
 
-        if (firstTick) {
-            currentPlay = core.Play(object.getEffectCore());
-            core.SetEffectScale(currentPlay, 10, 10, 10);
-            core.SetEffectPosition(currentPlay, pos.x(), pos.y(), pos.z());
-        }
+        pos = new Vector3f(pos).mul(-1, 1, -1);
 
+        int play = core.Play(object.getEffectCore());
+        core.SetEffectScale(play, size.x, size.y, size.z);
+        core.SetEffectPosition(play, pos.x(), pos.y(), pos.z());
+    }
+
+    public static void coreUpdate(Matrix4f projection, Matrix4f cameraMatrix, Matrix4f modelView) {
+        var core = EfkefcManager.getEffekseerManagerCore();
         Minecraft mc = Minecraft.getInstance();
 
         Matrix4f mul = new Matrix4f(projection).mul(modelView);
         setMatrix(core::SetProjectionMatrix, mul);
 
         setMatrix(core::SetCameraMatrix, cameraMatrix);
-
-        core.Update(mc.getDeltaFrameTime() * 10.0f);
+        core.Update(mc.getDeltaFrameTime());
         core.DrawBack();
         core.DrawFront();
     }
