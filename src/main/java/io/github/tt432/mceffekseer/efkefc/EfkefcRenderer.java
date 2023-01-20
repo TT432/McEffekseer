@@ -1,5 +1,6 @@
 package io.github.tt432.mceffekseer.efkefc;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -16,6 +17,13 @@ public class EfkefcRenderer {
         int play = core.Play(object.getEffectCore());
         core.SetEffectScale(play, size.x, size.y, size.z);
         core.SetEffectPosition(play, pos.x(), pos.y(), pos.z());
+    }
+
+    public static void begin() {
+        var core = EfkefcManager.getEffekseerManagerCore();
+        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        core.SetBackground(target.getColorTextureId(), false);
+        core.SetDepth(target.getDepthTextureId(), false);
     }
 
     public static void coreUpdate(Matrix4f projection, Matrix4f cameraMatrix, Matrix4f modelView) {

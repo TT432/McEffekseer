@@ -69,6 +69,8 @@ public class RenderHandler {
         Matrix4f projection = to(event.getProjectionMatrix());
         Matrix4f modelView = to(RenderSystem.getModelViewMatrix());
 
+        EfkefcRenderer.begin();
+
         Iterator<RenderInfo> it = RENDER_INFOS.iterator();
         while (it.hasNext()) {
             RenderInfo info = it.next();

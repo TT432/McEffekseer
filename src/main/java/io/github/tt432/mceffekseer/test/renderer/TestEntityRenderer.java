@@ -31,7 +31,7 @@ public class TestEntityRenderer extends ThrownItemRenderer<TestEntity> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
 
         if (pEntity.needStart) {
-            RenderHandler.renderOnce(new RenderHandler.RenderInfo(rl1, to(pEntity.position()), new Vector3f(1F)));
+            RenderHandler.renderOnce(new RenderHandler.RenderInfo(rl2, to(pEntity.position()), new Vector3f(1F)));
             pEntity.needStart = false;
         }
     }
