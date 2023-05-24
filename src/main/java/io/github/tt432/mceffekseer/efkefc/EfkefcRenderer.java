@@ -1,6 +1,8 @@
 package io.github.tt432.mceffekseer.efkefc;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import io.github.tt432.mceffekseer.RenderHandler;
+import io.github.tt432.mceffekseer.api.PositionHolder;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -9,14 +11,26 @@ import org.joml.Vector3f;
  * @author DustW
  */
 public class EfkefcRenderer {
-    public static void addToCore(EfkefcObject object, Vector3f pos, Vector3f size) {
+    public static void addToCore(EfkefcObject object, RenderHandler.RenderInfo info) {
         var core = EfkefcManager.getEffekseerManagerCore();
 
-        pos = new Vector3f(pos).mul(-1, 1, -1);
+        int pointer = core.Play(object.getEffectCore());
+        info.setPointer(pointer);
 
-        int play = core.Play(object.getEffectCore());
-        core.SetEffectScale(play, size.x, size.y, size.z);
-        core.SetEffectPosition(play, pos.x(), pos.y(), pos.z());
+        update(info);
+    }
+
+    public static void update(RenderHandler.RenderInfo info) {
+        var core = EfkefcManager.getEffekseerManagerCore();
+        PositionHolder posHolder = info.getPos();
+        int pointer = info.getPointer();
+
+        var size = info.getSize();
+        core.SetEffectScale(pointer, size.x, size.y, size.z);
+        var pos = new Vector3f(posHolder.pos()).mul(-1, 1, -1);
+        core.SetEffectPosition(pointer, pos.x(), pos.y(), pos.z());
+        Vector3f rot = posHolder.rot();
+        core.SetEffectRotation(pointer, rot.x, rot.y, rot.z);
     }
 
     public static void begin() {
@@ -34,7 +48,7 @@ public class EfkefcRenderer {
         setMatrix(core::SetProjectionMatrix, mul);
 
         setMatrix(core::SetCameraMatrix, cameraMatrix);
-        core.Update(mc.getDeltaFrameTime());
+        core.Update(mc.isPaused() ? 0 : mc.getDeltaFrameTime());
         core.DrawBack();
         core.DrawFront();
     }

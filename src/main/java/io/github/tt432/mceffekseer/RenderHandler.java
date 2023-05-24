@@ -1,10 +1,12 @@
 package io.github.tt432.mceffekseer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.tt432.mceffekseer.api.PositionHolder;
 import io.github.tt432.mceffekseer.efkefc.EfkefcManager;
 import io.github.tt432.mceffekseer.efkefc.EfkefcObject;
 import io.github.tt432.mceffekseer.efkefc.EfkefcRenderer;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
@@ -34,19 +36,20 @@ public class RenderHandler {
     private static final List<RenderInfo> RENDER_INFOS = new ArrayList<>();
 
     @RequiredArgsConstructor
+    @Data
     public static class RenderInfo {
         final ResourceLocation name;
-        final Vector3f pos;
+        final PositionHolder pos;
         final Vector3f size;
+        final boolean once;
 
-        long time;
-        boolean once;
+        int time;
 
+        int pointer;
         boolean started;
     }
 
-    public static void renderOnce(RenderInfo info) {
-        info.once = true;
+    public static void render(RenderInfo info) {
         info.time = time;
 
         RENDER_INFOS.add(info);
@@ -85,12 +88,15 @@ public class RenderHandler {
                         info.started = false;
                     }
                 } else if (time >= info.time && !info.started) {
-                    EfkefcRenderer.addToCore(efkefcObject, info.pos, info.size);
+                    EfkefcRenderer.addToCore(efkefcObject, info);
 
                     if (info.once)
                         it.remove();
                     else
                         info.started = true;
+                } else {
+                    if (!Minecraft.getInstance().isPaused())
+                        EfkefcRenderer.update(info);
                 }
             } else {
                 it.remove();

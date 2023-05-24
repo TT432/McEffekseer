@@ -34,10 +34,9 @@ public class EfkefcManager {
         efkefcMap.clear();
 
         scan(new FileToIdConverter(DIRECTORY, ".efkefc"), pResourceManager);
-        scan(new FileToIdConverter(DIRECTORY, ".efkproj"), pResourceManager);
     }
 
-   static void scan(FileToIdConverter fileToIdConverter, ResourceManager resourceManager) {
+    static void scan(FileToIdConverter fileToIdConverter, ResourceManager resourceManager) {
         for (var file : fileToIdConverter.listMatchingResources(resourceManager)) {
             ResourceLocation id = fileToIdConverter.fileToId(file);
 

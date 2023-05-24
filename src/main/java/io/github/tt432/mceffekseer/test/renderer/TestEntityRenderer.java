@@ -3,12 +3,12 @@ package io.github.tt432.mceffekseer.test.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.tt432.mceffekseer.Mceffekseer;
 import io.github.tt432.mceffekseer.RenderHandler;
+import io.github.tt432.mceffekseer.api.PositionHolder;
 import io.github.tt432.mceffekseer.test.entity.TestEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 /**
@@ -31,12 +31,9 @@ public class TestEntityRenderer extends ThrownItemRenderer<TestEntity> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
 
         if (pEntity.needStart) {
-            RenderHandler.renderOnce(new RenderHandler.RenderInfo(rl2, to(pEntity.position()), new Vector3f(1F)));
+            RenderHandler.render(new RenderHandler.RenderInfo(rl2,
+                    PositionHolder.entity(pEntity), new Vector3f(1F), true));
             pEntity.needStart = false;
         }
-    }
-
-    private static Vector3f to(Vec3 source) {
-        return new Vector3f((float) source.x(), (float) source.y(), (float) source.z());
     }
 }
